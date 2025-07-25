@@ -31,6 +31,15 @@ jobs:
           export REDDIT_USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
           python main.py
 
+      - name: Delete remote branch if exists
+        run: |
+         BRANCH="pautas-$(date +'%Y-%m-%d')"
+          if git ls-remote --exit-code --heads https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} "$BRANCH"; then
+            echo "Branch $BRANCH exists. Deleting before recreation."
+            git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} --delete "$BRANCH"
+          else
+            echo "Branch $BRANCH does not exist. Proceeding."
+         fi
       - name: Commit and push generated files
         run: |
           BRANCH="pautas-$(date +'%Y-%m-%d')"
@@ -40,33 +49,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git commit -m "Add daily pautas for $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} "$BRANCH"
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch: "pautas-$(date +'%Y-%m-%d')"
-          title: "Daily Pautas - $(date +'%Y-%m-%d')"
-          body: "Automated pull request with the pautas generated for $(date +'%Y-%m-%d')."
-          base: main
-          labels: |
-            daily-pauta
 
-      - name: Approve Pull Request
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
-      - name: Approve and Merge Pull Request
-        uses: devops-infra/action-pull-request@v0.6.0
-        with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          pull_request_number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge_method: squash
-          merge: true
-          approve: true
-
-      - name: Delete branch after merge
-        run: |
-         git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} --delete "pautas-$(date +'%Y-%m-%d')"
