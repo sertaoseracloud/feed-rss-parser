@@ -1,5 +1,5 @@
 from adapters.rss_adapter import RSSAdapter
-from adapters.reddit_adapter import RedditAdapter
+"""from adapters.reddit_adapter import RedditAdapter"""
 from adapters.markdown_adapter import MarkdownPresenter
 from use_cases.collect_posts import CollectPostsUseCase
 
@@ -25,9 +25,9 @@ if __name__ == "__main__":
         "IA & GenAI": ["machinelearning","artificial","OpenAI","genai"],
         "Comunidades & Reconhecimento": ["dotnet","aws","docker","opensource"]
     }
-    for cat, subs in reddit_subs.items():
+    """for cat, subs in reddit_subs.items():
         for sub in subs:
-            sources.append(RedditAdapter(sub, cat))
+            sources.append(RedditAdapter(sub, cat))"""
 
     presenter = MarkdownPresenter()
     use_case = CollectPostsUseCase(sources, presenter)
