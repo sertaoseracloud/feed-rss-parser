@@ -51,11 +51,6 @@ jobs:
           base: main
           labels: |
             daily-pauta
-      - name: Approve Pull Request
-        uses: hmarr/auto-approve-action@v3
-        with:
-          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
       - name: Approve Pull Request
         uses: hmarr/auto-approve-action@v3
@@ -64,11 +59,11 @@ jobs:
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
       - name: Merge Pull Request
-        uses: actions-ecosystem/action-merge-pull-request@v1
+        uses: peter-evans/merge-pull-request@v2
         with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          pull_request: ${{ steps.cpr.outputs.pull-request-number }}
-          merge_method: squash
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pull-request: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: squash
 
       - name: Delete branch after merge
         run: |
