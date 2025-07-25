@@ -1,0 +1,49 @@
+name: Daily Pauta Collection
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+jobs:
+  collect-pautas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pauta collector
+        run: |
+          python main.py
+
+      - name: Commit and push generated files
+        run: |
+          BRANCH="pautas-$(date +'%Y-%m-%d')"
+          git checkout -b "$BRANCH"
+          git add pautas_md/
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git commit -m "Add daily pautas for $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push origin "$BRANCH"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Add daily pautas for $(date +'%Y-%m-%d')"
+          branch: "pautas-$(date +'%Y-%m-%d')"
+          title: "Daily Pautas - $(date +'%Y-%m-%d')"
+          body: "Automated pull request with the pautas generated for $(date +'%Y-%m-%d')."
+          base: main
