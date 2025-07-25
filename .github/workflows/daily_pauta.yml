@@ -25,6 +25,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run pauta collector
+        env:
+          REDDIT_USER_AGENT: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         run: |
           python main.py
 
