@@ -58,12 +58,14 @@ jobs:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
 
-      - name: Merge Pull Request
-        uses: peter-evans/merge-pull-request@v2
+      - name: Approve and Merge Pull Request
+        uses: devops-infra/action-pull-request@v0.6.0
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          pull-request: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pull_request_number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge_method: squash
+          merge: true
+          approve: true
 
       - name: Delete branch after merge
         run: |
