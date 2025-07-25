@@ -35,20 +35,8 @@ jobs:
         run: |
           BRANCH="pautas-$(date +'%Y-%m-%d')"
           git checkout -b "$BRANCH"
-          g BRANCH="pautas-$(date +'%Y-%m-%d')"
-          git checkout -b "$BRANCH"
           git add pautas_md/
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git commit -m "Add daily pautas for $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} "$BRANCH"
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Add daily pautas for $(date +'%Y-%m-%d')"
-          branch: "pautas-$(date +'%Y-%m-%d')"
-          title: "Daily Pautas - $(date +'%Y-%m-%d')"
-          body: "Automated pull request with the pautas generated for $(date +'%Y-%m-%d')."
-          base: main
